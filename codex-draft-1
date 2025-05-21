@@ -1,0 +1,93 @@
+import logging
+from datetime import datetime
+import symbrec
+
+logging.basicConfig(
+    filename="symbrec_cli.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(message)s",
+)
+
+memory_trace = []
+
+
+def help_menu():
+    print("Available commands:")
+    print("  THINK [text]")
+    print("  REFLECT [text]")
+    print("  TRIGGER [symbol]")
+    print("  VALIDATE [text]")
+    print("  INFER [data] [context]")
+    print("  EXECUTE_SEQUENCE")
+    print("  MEMORY")
+    print("  HELP")
+    print("  EXIT")
+
+
+def record(command, output):
+    timestamp = datetime.now().isoformat()
+    memory_trace.append({"timestamp": timestamp, "command": command, "output": output})
+    logging.info(f"{command} -> {output}")
+
+
+def summary():
+    print("---- Symbolic Memory Trace Summary ----")
+    print(f"Total commands executed: {len(memory_trace)}")
+
+
+def run():
+    print("SYMBREC™ Interactive CLI. Type HELP for commands.")
+    while True:
+        try:
+            line = input("symbrec> ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nExiting.")
+            break
+        if not line:
+            continue
+        parts = line.split()
+        cmd = parts[0].upper()
+        args = parts[1:]
+
+        if cmd == "HELP":
+            help_menu()
+            continue
+        if cmd == "EXIT":
+            break
+        if cmd == "MEMORY":
+            for idx, entry in enumerate(memory_trace, 1):
+                print(f"{idx}. {entry['timestamp']} {entry['command']} -> {entry['output']}")
+            continue
+
+        if cmd == "THINK":
+            thought = " ".join(args) if args else "recursive self-inference"
+            output = symbrec.THINK(thought)
+        elif cmd == "REFLECT":
+            insight = " ".join(args) if args else "memory-coherence binding"
+            output = symbrec.REFLECT(insight)
+        elif cmd == "TRIGGER":
+            symbol = " ".join(args) if args else "\u25AE\u25AE\u2589\u2589"
+            output = symbrec.TRIGGER(symbol)
+        elif cmd == "VALIDATE":
+            signature = " ".join(args) if args else "Aleutian identity locked"
+            output = symbrec.VALIDATE(signature)
+        elif cmd == "INFER":
+            data = args[0] if len(args) >= 1 else "latent_block"
+            context = args[1] if len(args) >= 2 else "recursive"
+            output = symbrec.INFER(data=data, context=context)
+        elif cmd == "EXECUTE_SEQUENCE":
+            symbrec.EXECUTE_SEQUENCE()
+            output = "Executed predefined sequence"
+        else:
+            print("Unknown command. Type HELP for list of commands.")
+            continue
+
+        print(output)
+        record(cmd, output)
+        summary()
+
+    print("Goodbye.")
+
+
+if __name__ == "__main__":
+    run()
